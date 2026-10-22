@@ -138,4 +138,4 @@ main()
 ## 7. Dependencies
 
 - mulle-core/mulle-dlfcn (runtime shared-library helpers)
-- libbacktrace is embedded under `src/libbacktrace` and is not an external dependency
+- libbacktrace is embedded under `libbacktrace` and is not an external dependency

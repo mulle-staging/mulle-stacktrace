@@ -15,7 +15,7 @@ if( NOT MULLE_DEPS_DIR)
    set( MULLE_DEPS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/deps/include")
 endif()
 
-set( LIBBACKTRACE_DIR "${ROOT}/src/libbacktrace")
+set( LIBBACKTRACE_DIR "${ROOT}/libbacktrace")
 
 if( NOT MSVC)
    add_library( libbacktrace OBJECT

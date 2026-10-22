@@ -13,8 +13,8 @@ endif()
 set( INCLUDE_DIRS
 src/reflect
 src/generic
-src/libbacktrace
 src
+libbacktrace
 )
 
 #
@@ -50,12 +50,18 @@ src/generic/include.h
 # contents selected with patternfile ??-header--public-headers
 #
 set( PUBLIC_HEADERS
-src/libbacktrace/backtrace.h
-src/libbacktrace/backtrace-supported.h
-src/libbacktrace/config.h
-src/libbacktrace/filenames.h
-src/libbacktrace/internal.h
-src/libbacktrace/mulle-backtrace-prefix.h
 src/mulle-stacktrace.h
+)
+
+#
+# contents selected with patternfile ??-header--vendored-libbacktrace
+#
+set( VENDORED_LIBBACKTRACE
+libbacktrace/backtrace.h
+libbacktrace/backtrace-supported.h
+libbacktrace/config.h
+libbacktrace/filenames.h
+libbacktrace/internal.h
+libbacktrace/mulle-backtrace-prefix.h
 )
 

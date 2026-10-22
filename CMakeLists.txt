@@ -36,16 +36,11 @@ include( Files)
 if( NOT MINGW AND (MSVC OR CMAKE_C_SIMULATE_ID STREQUAL "MSVC"))
    # MSVC/clang-cl use the DbgHelp backend instead of libbacktrace
 else()
-   # libbacktrace has mutually exclusive sources, so it is built as an
-   # OBJECT library in its own directory instead of by the generated
-   # SOURCES list.
-   list( FILTER SOURCES EXCLUDE REGEX "src/libbacktrace/.*[.]c$")
-   add_subdirectory( src/libbacktrace)
+   # libbacktrace lives outside src/ and has mutually exclusive sources, so it
+   # is built as an OBJECT library instead of by the generated SOURCES list.
+   add_subdirectory( libbacktrace)
    set( OTHER_LIBRARY_OBJECT_FILES $<TARGET_OBJECTS:mulle-libbacktrace>)
 endif()
-
-# libbacktrace headers are implementation details, do not install them
-list( FILTER INSTALL_PUBLIC_HEADERS EXCLUDE REGEX "src/libbacktrace/.*")
 
 ### Library
 
@@ -73,7 +68,7 @@ if( NOT MINGW AND (MSVC OR CMAKE_C_SIMULATE_ID STREQUAL "MSVC"))
    endif()
 else()
    target_include_directories( "${LIBRARY_COMPILE_TARGET}" PRIVATE
-      "${CMAKE_CURRENT_SOURCE_DIR}/src/libbacktrace"
+      "${CMAKE_CURRENT_SOURCE_DIR}/libbacktrace"
    )
 endif()
 

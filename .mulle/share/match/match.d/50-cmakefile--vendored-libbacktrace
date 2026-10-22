@@ -1,0 +1,2 @@
+# The vendored libbacktrace CMakeLists.txt is not a project-editable cmake file.
+libbacktrace/CMakeLists.txt

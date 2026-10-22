@@ -11,26 +11,32 @@ endif()
 # contents selected with patternfile ??-source--sources
 #
 set( SOURCES
-src/libbacktrace/alloc.c
-src/libbacktrace/atomic.c
-src/libbacktrace/backtrace.c
-src/libbacktrace/dwarf.c
-src/libbacktrace/elf.c
-src/libbacktrace/fileline.c
-src/libbacktrace/macho.c
-src/libbacktrace/mmap.c
-src/libbacktrace/mmapio.c
-src/libbacktrace/nounwind.c
-src/libbacktrace/pecoff.c
-src/libbacktrace/posix.c
-src/libbacktrace/print.c
-src/libbacktrace/read.c
-src/libbacktrace/simple.c
-src/libbacktrace/sort.c
-src/libbacktrace/state.c
 src/mulle-stacktrace-backtrace.c
 src/mulle-stacktrace.c
 src/mulle-stacktrace-dbghelp.c
 src/mulle-stacktrace-execinfo.c
 src/mulle-stacktrace-nop.c
+)
+
+#
+# contents selected with patternfile ??-source--vendored-libbacktrace
+#
+set( VENDORED_LIBBACKTRACE
+libbacktrace/alloc.c
+libbacktrace/atomic.c
+libbacktrace/backtrace.c
+libbacktrace/dwarf.c
+libbacktrace/elf.c
+libbacktrace/fileline.c
+libbacktrace/macho.c
+libbacktrace/mmap.c
+libbacktrace/mmapio.c
+libbacktrace/nounwind.c
+libbacktrace/pecoff.c
+libbacktrace/posix.c
+libbacktrace/print.c
+libbacktrace/read.c
+libbacktrace/simple.c
+libbacktrace/sort.c
+libbacktrace/state.c
 )

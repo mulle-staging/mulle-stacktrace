@@ -2,7 +2,7 @@
 
 feature: embed libbacktrace, no configure or external dependency
 
-* embedded a configure-free libbacktrace copy under `src/libbacktrace`, built as an OBJECT library and folded into mulle-stacktrace
+* embedded a configure-free libbacktrace copy under `libbacktrace`, built as an OBJECT library and folded into mulle-stacktrace
 * file:line stacktraces on Linux, Android, macOS, BSD and Windows MinGW
 * added a DbgHelp backend for MSVC/clang-cl, so Windows works with either toolchain
 * prefixed all exported libbacktrace symbols with `mulle_` to avoid collisions

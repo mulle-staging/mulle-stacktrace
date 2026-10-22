@@ -14,12 +14,6 @@
 
 
 #include "demo-version.h"
-#include "backtrace.h"
-#include "backtrace-supported.h"
-#include "config.h"
-#include "filenames.h"
-#include "internal.h"
-#include "mulle-backtrace-prefix.h"
 #include "mulle-stacktrace.h"
 
 

@@ -1,0 +1,3 @@
+# Vendored libbacktrace sources are built explicitly by libbacktrace/CMakeLists.txt,
+# not from the generated SOURCES list.
+libbacktrace/*.c
