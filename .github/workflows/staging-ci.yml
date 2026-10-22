@@ -38,8 +38,9 @@ jobs:
             dsymutil "$exe"
           fi
           "$exe" | tee demo.out
-          grep -q "backend:" demo.out
-          grep -q " at .*:[0-9]" demo.out
+          grep -q "backend: backtrace" demo.out
+          grep -q "foo at .*main-demo1[.]c:[0-9]" demo.out
+          grep -q "main at .*main-demo1[.]c:[0-9]" demo.out
 
   windows-msys2:
     name: windows-latest (MSYS2 MinGW)
@@ -87,7 +88,8 @@ jobs:
           cmake --build ci-build
           ./ci-build/ci-demo | tee ci-demo.out
           grep -q "backend: backtrace" ci-demo.out
-          grep -q " at .*:[0-9]" ci-demo.out
+          grep -q "foo at .*demo[.]c:[0-9]" ci-demo.out
+          grep -q "main at .*demo[.]c:[0-9]" ci-demo.out
 
   windows-msvc:
     name: windows-latest (MSVC)
@@ -122,4 +124,5 @@ jobs:
           cmake --build ci-build
           ./ci-build/ci-demo.exe | tee ci-demo.out
           grep -q "backend: dbghelp" ci-demo.out
-          grep -q " at .*:[0-9]" ci-demo.out
+          grep -q "foo at .*demo[.]c:[0-9]" ci-demo.out
+          grep -q "main at .*demo[.]c:[0-9]" ci-demo.out
