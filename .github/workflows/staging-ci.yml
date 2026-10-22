@@ -59,48 +59,67 @@ jobs:
             git
             curl
             tar
-            make
-            diffutils
-            perl
             mingw-w64-x86_64-toolchain
             mingw-w64-x86_64-cmake
             mingw-w64-x86_64-ninja
 
-      - name: Install mulle-sde
+      - name: Fetch test headers
         run: |
-          if ! command -v mulle-sde > /dev/null 2>&1
-          then
-            curl -fsSL -o installer-all \
-              https://raw.githubusercontent.com/mulle-sde/mulle-sde/master/bin/installer-all
-            chmod +x installer-all
-            ./installer-all "$HOME" no
-          fi
-          echo "$HOME/bin" >> "$GITHUB_PATH"
+          deproot="$RUNNER_TEMP/ci-deps"
+          depinclude="$(cygpath -m "$deproot/include")"
+          rm -rf "$deproot" mulle-c11-latest
+          mkdir -p "$deproot/include/mulle-c11" "$deproot/include/mulle-dlfcn"
+          curl -fsSL https://github.com/mulle-c/mulle-c11/archive/latest.tar.gz | tar xz
+          cp mulle-c11-latest/src/*.h "$deproot/include/mulle-c11/"
+          printf '#ifndef MULLE_DLFCN_H\n#define MULLE_DLFCN_H\n#endif\n' \
+            > "$deproot/include/mulle-dlfcn/mulle-dlfcn.h"
+          rm -rf mulle-c11-latest
+          echo "MULLE_DEPS_DIR=$depinclude" >> "$GITHUB_ENV"
 
-      - name: Prepare mulle state
+      - name: Configure, build and run
+        env:
+          CC: gcc
+          CXX: g++
         run: |
-          mkdir -p .mulle/var
-          echo "CC=gcc" >> "$GITHUB_ENV"
-          echo "CXX=g++" >> "$GITHUB_ENV"
-          dependency_dir="$(pwd -W)/dependency"
-          echo "DEPENDENCY_DIR=${dependency_dir}" >> "$GITHUB_ENV"
-          echo "MULLE_CRAFT_DEPENDENCY_DIR=${dependency_dir}" >> "$GITHUB_ENV"
-          echo "MULLE_CRAFT_DEPENDENCY_UNQUALIFIED_DIR=${dependency_dir}" >> "$GITHUB_ENV"
+          cmake -S .github/ci -B ci-build -G Ninja \
+                -DCMAKE_BUILD_TYPE=Debug \
+                -DMULLE_DEPS_DIR="$MULLE_DEPS_DIR"
+          cmake --build ci-build
+          ./ci-build/ci-demo | tee ci-demo.out
+          grep -q "backend: backtrace" ci-demo.out
+          grep -q " at .*:[0-9]" ci-demo.out
 
-      - name: Craft
-        run: |
-          export PATH="$HOME/bin:$PATH"
-          mulle-sde craft --release
+  windows-msvc:
+    name: windows-latest (MSVC)
+    runs-on: windows-latest
 
-      - name: Build and run demo
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Fetch test headers
+        shell: bash
         run: |
-          export PATH="$HOME/bin:$PATH"
-          cd demo
-          mulle-sde -DMULLE_CRAFT_PLATFORMS="${MULLE_UNAME}" \
-                     -DMULLE_SOURCETREE_PLATFORMS="${MULLE_UNAME}" \
-                     craft --debug
-          exe="$(find kitchen -type f \( -name demo1 -o -name demo1.exe \) | head -1)"
-          test -n "$exe"
-          "$exe" | tee demo.out
-          grep -q "backend:" demo.out
-          grep -q " at .*:[0-9]" demo.out
+          deproot="$RUNNER_TEMP/ci-deps"
+          depinclude="$(cygpath -m "$deproot/include")"
+          rm -rf "$deproot" mulle-c11-latest
+          mkdir -p "$deproot/include/mulle-c11" "$deproot/include/mulle-dlfcn"
+          curl -fsSL https://github.com/mulle-c/mulle-c11/archive/latest.tar.gz | tar xz
+          cp mulle-c11-latest/src/*.h "$deproot/include/mulle-c11/"
+          printf '#ifndef MULLE_DLFCN_H\n#define MULLE_DLFCN_H\n#endif\n' \
+            > "$deproot/include/mulle-dlfcn/mulle-dlfcn.h"
+          rm -rf mulle-c11-latest
+          echo "MULLE_DEPS_DIR=$depinclude" >> "$GITHUB_ENV"
+
+      - name: Configure, build and run
+        shell: bash
+        run: |
+          cmake -S .github/ci -B ci-build -G Ninja \
+                -DCMAKE_BUILD_TYPE=Debug \
+                -DCMAKE_C_COMPILER=cl \
+                -DMULLE_DEPS_DIR="$MULLE_DEPS_DIR"
+          cmake --build ci-build
+          ./ci-build/ci-demo.exe | tee ci-demo.out
+          grep -q "backend: dbghelp" ci-demo.out
+          grep -q " at .*:[0-9]" ci-demo.out
