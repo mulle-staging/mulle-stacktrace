@@ -82,6 +82,10 @@ jobs:
           mkdir -p .mulle/var
           echo "CC=gcc" >> "$GITHUB_ENV"
           echo "CXX=g++" >> "$GITHUB_ENV"
+          dependency_dir="$(pwd -W)/dependency"
+          echo "DEPENDENCY_DIR=${dependency_dir}" >> "$GITHUB_ENV"
+          echo "MULLE_CRAFT_DEPENDENCY_DIR=${dependency_dir}" >> "$GITHUB_ENV"
+          echo "MULLE_CRAFT_DEPENDENCY_UNQUALIFIED_DIR=${dependency_dir}" >> "$GITHUB_ENV"
 
       - name: Craft
         run: |
