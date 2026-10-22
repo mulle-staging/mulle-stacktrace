@@ -28,7 +28,9 @@ jobs:
       - name: Build and run demo
         run: |
           cd demo
-          mulle-sde craft --debug
+          mulle-sde -DMULLE_CRAFT_PLATFORMS="${MULLE_UNAME}" \
+                     -DMULLE_SOURCETREE_PLATFORMS="${MULLE_UNAME}" \
+                     craft --debug
           exe="$(find kitchen -type f \( -name demo1 -o -name demo1.exe \) | head -1)"
           test -n "$exe"
           if command -v dsymutil > /dev/null 2>&1
@@ -83,7 +85,9 @@ jobs:
         run: |
           export PATH="$HOME/bin:$PATH"
           cd demo
-          mulle-sde craft --debug
+          mulle-sde -DMULLE_CRAFT_PLATFORMS="${MULLE_UNAME}" \
+                     -DMULLE_SOURCETREE_PLATFORMS="${MULLE_UNAME}" \
+                     craft --debug
           exe="$(find kitchen -type f \( -name demo1 -o -name demo1.exe \) | head -1)"
           test -n "$exe"
           "$exe" | tee demo.out
