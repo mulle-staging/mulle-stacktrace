@@ -15,6 +15,7 @@ src/reflect
 src/generic
 src
 ../src/reflect
+../src/libbacktrace
 ../src
 )
 
@@ -55,6 +56,12 @@ src/generic/include.h
 #
 set( PUBLIC_HEADERS
 src/demo-version.h
+../src/libbacktrace/backtrace.h
+../src/libbacktrace/backtrace-supported.h
+../src/libbacktrace/config.h
+../src/libbacktrace/filenames.h
+../src/libbacktrace/internal.h
+../src/libbacktrace/mulle-backtrace-prefix.h
 ../src/mulle-stacktrace.h
 )
 

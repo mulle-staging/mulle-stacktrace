@@ -1,6 +1,6 @@
 {
    "name" : "mulle-stacktrace",
-   "version" : "0.5.3",
+   "version" : "0.6.0",
    "description" : "👣 Stracktrace support for various OS",
    "keywords" : [],
    "license" : "BSD-3-Clause",
@@ -9,7 +9,31 @@
       "asset/dox/api/toc/index.md",
       "src/generic/include-private.h",
       "src/generic/include.h",
+      "src/libbacktrace/alloc.c",
+      "src/libbacktrace/atomic.c",
+      "src/libbacktrace/backtrace-supported.h",
+      "src/libbacktrace/backtrace.c",
+      "src/libbacktrace/backtrace.h",
+      "src/libbacktrace/config.h",
+      "src/libbacktrace/dwarf.c",
+      "src/libbacktrace/elf.c",
+      "src/libbacktrace/fileline.c",
+      "src/libbacktrace/filenames.h",
+      "src/libbacktrace/internal.h",
+      "src/libbacktrace/macho.c",
+      "src/libbacktrace/mmap.c",
+      "src/libbacktrace/mmapio.c",
+      "src/libbacktrace/mulle-backtrace-prefix.h",
+      "src/libbacktrace/nounwind.c",
+      "src/libbacktrace/pecoff.c",
+      "src/libbacktrace/posix.c",
+      "src/libbacktrace/print.c",
+      "src/libbacktrace/read.c",
+      "src/libbacktrace/simple.c",
+      "src/libbacktrace/sort.c",
+      "src/libbacktrace/state.c",
       "src/mulle-stacktrace-backtrace.c",
+      "src/mulle-stacktrace-dbghelp.c",
       "src/mulle-stacktrace-execinfo.c",
       "src/mulle-stacktrace-nop.c",
       "src/mulle-stacktrace.c",
@@ -19,7 +43,6 @@
       "src/reflect/_mulle-stacktrace-versioncheck.h"
    ],
    "dependencies" : {
-      "mulle-core/mulle-dlfcn": "*",
-      "mulle-core/libbacktrace": "*"
+      "mulle-core/mulle-dlfcn": "*"
    }
 }

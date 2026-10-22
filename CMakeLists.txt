@@ -1,6 +1,6 @@
 cmake_minimum_required( VERSION 3.13...99.99)
 
-project( mulle-stacktrace VERSION 0.5.3 LANGUAGES C)
+project( mulle-stacktrace VERSION 0.6.0 LANGUAGES C)
 
 #
 # The library advertises ANSI/ISO C (see the "std" and "apis" badges in the
@@ -31,6 +31,22 @@ include( Environment)
 
 include( Files)
 
+### Embedded libbacktrace
+
+if( NOT MINGW AND (MSVC OR CMAKE_C_SIMULATE_ID STREQUAL "MSVC"))
+   # MSVC/clang-cl use the DbgHelp backend instead of libbacktrace
+else()
+   # libbacktrace has mutually exclusive sources, so it is built as an
+   # OBJECT library in its own directory instead of by the generated
+   # SOURCES list.
+   list( FILTER SOURCES EXCLUDE REGEX "src/libbacktrace/.*[.]c$")
+   add_subdirectory( src/libbacktrace)
+   set( OTHER_LIBRARY_OBJECT_FILES $<TARGET_OBJECTS:mulle-libbacktrace>)
+endif()
+
+# libbacktrace headers are implementation details, do not install them
+list( FILTER INSTALL_PUBLIC_HEADERS EXCLUDE REGEX "src/libbacktrace/.*")
+
 ### Library
 
 if( HEADERS_PHASE)
@@ -49,6 +65,17 @@ if( LINK_PHASE)
 endif()
 
 include( Library)
+
+if( NOT MINGW AND (MSVC OR CMAKE_C_SIMULATE_ID STREQUAL "MSVC"))
+   target_link_libraries( "${LIBRARY_COMPILE_TARGET}" PRIVATE dbghelp)
+   if( LINK_PHASE)
+      target_link_libraries( "${LIBRARY_LINK_TARGET}" PUBLIC dbghelp)
+   endif()
+else()
+   target_include_directories( "${LIBRARY_COMPILE_TARGET}" PRIVATE
+      "${CMAKE_CURRENT_SOURCE_DIR}/src/libbacktrace"
+   )
+endif()
 
 # use LIBRARY_COMPILE_TARGET for compiler options
 target_compile_definitions( "${LIBRARY_COMPILE_TARGET}" PUBLIC)

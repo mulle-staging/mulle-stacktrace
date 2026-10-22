@@ -194,6 +194,18 @@ static int   _trim_boring_functions( char *s, int size)
    if( stracktrace_has_prefix( s, "_mulle_objc"))
       return( 1);
 
+   // runtime startup frames are never interesting for a trimmed trace
+   if( stracktrace_has_prefix( s, "__libc_start"))
+      return( 1);
+   if( stracktrace_has_prefix( s, "__clone"))
+      return( 1);
+   if( stracktrace_has_prefix( s, "start_thread"))
+      return( 1);
+   if( stracktrace_has_prefix( s, "_start"))
+      return( 1);
+   if( stracktrace_has_prefix( s, "_dyld_start"))
+      return( 1);
+
    return( 0);
 }
 

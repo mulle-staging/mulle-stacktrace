@@ -1,0 +1,84 @@
+name: Staging CI matrix
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  posix:
+    name: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: mulle-sde/github-ci@v2
+
+      - name: Craft
+        run: mulle-sde craft --release
+
+      - name: Build and run demo
+        run: |
+          cd demo
+          mulle-sde craft --debug
+          exe="$(find kitchen -type f \( -name demo1 -o -name demo1.exe \) | head -1)"
+          test -n "$exe"
+          "$exe" | tee demo.out
+          grep -q "backend:" demo.out
+          grep -q " at .*:[0-9]" demo.out
+
+  windows-msys2:
+    name: windows-latest (MSYS2 MinGW)
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 {0}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: true
+          install: >-
+            git
+            curl
+            tar
+            make
+            diffutils
+            mingw-w64-x86_64-toolchain
+            mingw-w64-x86_64-cmake
+            mingw-w64-x86_64-ninja
+
+      - name: Install mulle-sde
+        run: |
+          if ! command -v mulle-sde > /dev/null 2>&1
+          then
+            curl -fsSL -o installer-all \
+              https://raw.githubusercontent.com/mulle-sde/mulle-sde/master/bin/installer-all
+            chmod +x installer-all
+            ./installer-all "$HOME" no
+          fi
+          echo "$HOME/bin" >> "$GITHUB_PATH"
+
+      - name: Craft
+        run: |
+          export PATH="$HOME/bin:$PATH"
+          mulle-sde craft --release
+
+      - name: Build and run demo
+        run: |
+          export PATH="$HOME/bin:$PATH"
+          cd demo
+          mulle-sde craft --debug
+          exe="$(find kitchen -type f \( -name demo1 -o -name demo1.exe \) | head -1)"
+          test -n "$exe"
+          "$exe" | tee demo.out
+          grep -q "backend:" demo.out
+          grep -q " at .*:[0-9]" demo.out

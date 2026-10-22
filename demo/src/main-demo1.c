@@ -16,6 +16,7 @@ static void  foo( char *s)
 
 int  main( int argc, char *argv[])
 {
+   printf( "backend: %s\n", mulle_stacktrace_get_backend( NULL));
    foo( "VfL Bochum 1848");
    return( 0);
 }

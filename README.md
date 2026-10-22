@@ -3,8 +3,11 @@
 #### 👣 Stracktrace support for various OS
 
 The idea here is to have a unified library for stacktraces.
-It now defaults to [libbacktrace](https://github.com/ianlancetaylor/libbacktrace)`
-as the actual stacktrace implemntation.
+It embeds a configure-free copy of
+[libbacktrace](https://github.com/ianlancetaylor/libbacktrace) for file:line
+symbolication on Linux, Android, macOS, BSD and Windows MinGW, and uses a
+DbgHelp backend for MSVC/clang-cl. The embedded libbacktrace is BSD-licensed
+and needs no separate install or configure step.
 
 
 
@@ -119,7 +122,9 @@ Install the requirements:
 | Requirements                                 | Description
 |----------------------------------------------|-----------------------
 | [mulle-dlfcn](https://github.com/mulle-core/mulle-dlfcn)             | ♿️ Shared library helper
-| [libbacktrace](https://github.com/mulle-core/libbacktrace)             | A C library that may be linked into a C/C++ program to produce symbolic backtraces
+
+libbacktrace is bundled with mulle-stacktrace. There is no separate
+dependency, configure step or system installation.
 
 Download the latest [tar](https://github.com/mulle-core/mulle-stacktrace/archive/refs/tags/latest.tar.gz) or [zip](https://github.com/mulle-core/mulle-stacktrace/archive/refs/tags/latest.zip) archive and unpack it.
 

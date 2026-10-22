@@ -46,16 +46,29 @@
 #define MULLE_STRACKTRACE_BACKEND_NONE          0
 #define MULLE_STRACKTRACE_BACKEND_LIBBACKTRACE  1
 #define MULLE_STRACKTRACE_BACKEND_EXECINFO      2
+#define MULLE_STRACKTRACE_BACKEND_DBGHELP       3
 
 
-#if defined( HAVE_LIB_LIBBACKTRACE) && ! defined( MULLE_STACKTRACE_NO_LIBBACKTRACE)
-# define MULLE_STRACKTRACE_BACKEND   MULLE_STRACKTRACE_BACKEND_LIBBACKTRACE
-#else
-# if (defined( __APPLE__) || defined( __linux__) || defined( __FreeBSD__) || defined( __OpenBSD__) || defined( __NetBSD__))
+#if defined( MULLE_STACKTRACE_NO_LIBBACKTRACE)
+# if defined( __ANDROID__) && \
+     ( ! defined( __ANDROID_API__) || __ANDROID_API__ < 33)
+#  define MULLE_STRACKTRACE_BACKEND   MULLE_STRACKTRACE_BACKEND_NONE
+# elif defined( __has_include)
+#  if __has_include( <execinfo.h>)
+#   define MULLE_STRACKTRACE_BACKEND   MULLE_STRACKTRACE_BACKEND_EXECINFO
+#  else
+#   define MULLE_STRACKTRACE_BACKEND   MULLE_STRACKTRACE_BACKEND_NONE
+#  endif
+# elif defined( __APPLE__) || defined( __linux__) || defined( __FreeBSD__) || \
+       defined( __OpenBSD__) || defined( __NetBSD__)
 #  define MULLE_STRACKTRACE_BACKEND   MULLE_STRACKTRACE_BACKEND_EXECINFO
 # else
 #  define MULLE_STRACKTRACE_BACKEND   MULLE_STRACKTRACE_BACKEND_NONE
 # endif
+#elif defined( _MSC_VER) && ! defined( __MINGW32__)
+# define MULLE_STRACKTRACE_BACKEND   MULLE_STRACKTRACE_BACKEND_DBGHELP
+#else
+# define MULLE_STRACKTRACE_BACKEND   MULLE_STRACKTRACE_BACKEND_LIBBACKTRACE
 #endif
 
 
@@ -64,7 +77,7 @@
  *
  *  version:  major, minor, patch
  */
-#define MULLE__STACKTRACE_VERSION  ((0UL << 20) | (5 << 8) | 3)
+#define MULLE__STACKTRACE_VERSION  ((0UL << 20) | (6 << 8) | 0)
 
 
 static inline unsigned int   mulle_stacktrace_get_version_major( void)

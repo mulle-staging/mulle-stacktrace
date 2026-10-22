@@ -16,6 +16,16 @@ include( Environment)
 
 include( Files)
 
+### Embedded libbacktrace (via the parent project)
+
+if( NOT MINGW AND (MSVC OR CMAKE_C_SIMULATE_ID STREQUAL "MSVC"))
+   # MSVC/clang-cl use the DbgHelp backend instead of libbacktrace
+else()
+   list( FILTER SOURCES EXCLUDE REGEX "[.][.]/src/libbacktrace/.*[.]c$")
+   add_subdirectory( ../src/libbacktrace "${CMAKE_CURRENT_BINARY_DIR}/libbacktrace")
+   set( OTHER_EXECUTABLE_OBJECT_FILES $<TARGET_OBJECTS:mulle-libbacktrace>)
+endif()
+
 # include( IDESupport OPTIONAL)
 
 include( Dependencies OPTIONAL)
@@ -41,6 +51,9 @@ foreach( MAIN_SOURCE ${DEMO_MAIN_SOURCES})
 
    set( SOURCES "${MAIN_SOURCE}" ${DEMO_OTHER_SOURCES})
    include( Executable)
+   if( NOT MINGW AND (MSVC OR CMAKE_C_SIMULATE_ID STREQUAL "MSVC"))
+      target_link_libraries( "${EXECUTABLE_LINK_TARGET}" PUBLIC dbghelp)
+   endif()
    include( InstallExecutable)
    include( FinalOutput OPTIONAL)
    # only for Executable

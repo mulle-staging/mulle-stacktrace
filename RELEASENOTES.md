@@ -1,3 +1,14 @@
+### 0.6.0
+
+feature: embed libbacktrace, no configure or external dependency
+
+* embedded a configure-free libbacktrace copy under `src/libbacktrace`, built as an OBJECT library and folded into mulle-stacktrace
+* file:line stacktraces on Linux, Android, macOS, BSD and Windows MinGW
+* added a DbgHelp backend for MSVC/clang-cl, so Windows works with either toolchain
+* prefixed all exported libbacktrace symbols with `mulle_` to avoid collisions
+* removed the libbacktrace dependency, craftinfo and configure step
+* fixed `mulle_stacktrace_count_frames` using an uninitialized context, made state creation race-safe, defined trimmed formatting (no address prefix, no startup frames) and stopped repeated libbacktrace errors from interleaving with the trace
+
 ### 0.5.3
 
 

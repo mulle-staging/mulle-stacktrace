@@ -4,16 +4,16 @@
 ## 1. Introduction & Purpose
 
 - A compact C library to capture and print stack traces (frames + symbols) across platforms.
-- Solves unified stacktrace collection and formatting for debugging and logging; defaults to libbacktrace when available and falls back to execinfo on POSIX systems.
+- Solves unified stacktrace collection and formatting for debugging and logging; uses an embedded, configure-free libbacktrace copy and falls back to execinfo on POSIX systems.
 - Key features: simple one-shot printing, configurable stacktrace instance (symbolizer callbacks, trimming), multiple output formats (normal, trimmed, linefeed, CSV).
-- Component of mulle-core; depends on mulle-dlfcn and libbacktrace (optional).
-- Backend selected at compile time via `MULLE_STRACKTRACE_BACKEND`: `libbacktrace` when `HAVE_LIB_LIBBACKTRACE` is defined (unless `MULLE_STACKTRACE_NO_LIBBACKTRACE` is set), otherwise `execinfo` on Apple/Linux/BSD, else none.
+- Component of mulle-core; depends on mulle-dlfcn. libbacktrace is embedded, not an external dependency.
+- Backend selected at compile time via `MULLE_STRACKTRACE_BACKEND`: `libbacktrace` for GCC/Clang targets, `dbghelp` for MSVC/clang-cl (without MinGW), `execinfo` when `MULLE_STACKTRACE_NO_LIBBACKTRACE` is defined and execinfo is available, else none.
 
 ## 2. Key Concepts & Design Philosophy
 
 - Minimal, backend-abstracted API: callers either use a default behavior (NULL) or provide a configured struct mulle_stacktrace.
 - Symbolization is pluggable via a symboleizer callback type; trimming/filtering of frames is provided via callback hooks.
-- Backend is chosen in `src/mulle-stacktrace.h` at compile time: the `MULLE_STRACKTRACE_BACKEND` macro is set to one of `MULLE_STRACKTRACE_BACKEND_LIBBACKTRACE` (1), `MULLE_STRACKTRACE_BACKEND_EXECINFO` (2) or `MULLE_STRACKTRACE_BACKEND_NONE` (0). libbacktrace is preferred if `HAVE_LIB_LIBBACKTRACE` is defined; defining `MULLE_STACKTRACE_NO_LIBBACKTRACE` force-disables it. Execinfo is used on `__APPLE__`, `__linux__`, `__FreeBSD__`, `__OpenBSD__`, `__NetBSD__`; all other platforms get the nop backend.
+- Backend is chosen in `src/mulle-stacktrace.h` at compile time: the `MULLE_STRACKTRACE_BACKEND` macro is set to one of `MULLE_STRACKTRACE_BACKEND_LIBBACKTRACE` (1), `MULLE_STRACKTRACE_BACKEND_EXECINFO` (2), `MULLE_STRACKTRACE_BACKEND_DBGHELP` (3) or `MULLE_STRACKTRACE_BACKEND_NONE` (0). libbacktrace is used for GCC/Clang targets, dbghelp for MSVC/clang-cl without MinGW. Defining `MULLE_STACKTRACE_NO_LIBBACKTRACE` selects execinfo when `<execinfo.h>` is available (with an Android API >= 33 check), else none.
 - Formatting is separated from capture via an enum (format choices) so callers can request different textual representations without changing capture logic.
 - Lightweight: designed for library embedding and easy use in error/report paths.
 
@@ -65,17 +65,18 @@ Compile-time backend selection (defined in src/mulle-stacktrace.h):
 - #define MULLE_STRACKTRACE_BACKEND_NONE          0
 - #define MULLE_STRACKTRACE_BACKEND_LIBBACKTRACE  1
 - #define MULLE_STRACKTRACE_BACKEND_EXECINFO      2
-- `MULLE_STRACKTRACE_BACKEND` is auto-defined to one of the above; `MULLE_STACKTRACE_NO_LIBBACKTRACE` can be defined at build time to force-disable the libbacktrace backend.
+- #define MULLE_STRACKTRACE_BACKEND_DBGHELP       3
+- `MULLE_STRACKTRACE_BACKEND` is auto-defined to one of the above; `MULLE_STACKTRACE_NO_LIBBACKTRACE` can be defined at build time to select the execinfo fallback instead.
 
 Other exported helpers:
-- Version helpers: mulle_stacktrace_get_version() (current version 0.5.3), and inline getters mulle_stacktrace_get_version_major(), mulle_stacktrace_get_version_minor(), mulle_stacktrace_get_version_patch().
+- Version helpers: mulle_stacktrace_get_version() (current version 0.6.0), and inline getters mulle_stacktrace_get_version_major(), mulle_stacktrace_get_version_minor(), mulle_stacktrace_get_version_patch().
 
 ## 4. Performance Characteristics
 
 - Capture and symbolization cost proportional to number of frames O(n) where n is frames captured.
 - Symbolization might be expensive (name lookup, I/O); overall time dominated by backend symbol resolution.
 - Memory: minimal stack allocations; symbolizer may write into provided buffer (caller-provided stack memory).
-- Thread-safety: not universally guaranteed; thread-safety depends on chosen backend (libbacktrace, execinfo) and any global symbolization state. Assume "backend-dependent; do not rely on implicit locking" unless backend docs state otherwise.
+- Thread-safety: not universally guaranteed. libbacktrace state creation is race-safe, DbgHelp symbolization is serialized, and execinfo depends on the platform. Assume "backend-dependent; do not rely on implicit locking" unless backend docs state otherwise.
 
 ## 5. AI Usage Recommendations & Patterns
 
@@ -137,4 +138,4 @@ main()
 ## 7. Dependencies
 
 - mulle-core/mulle-dlfcn (runtime shared-library helpers)
-- mulle-core/libbacktrace (preferred symbolization backend; optional at build time, can be disabled via `MULLE_STACKTRACE_NO_LIBBACKTRACE`)
+- libbacktrace is embedded under `src/libbacktrace` and is not an external dependency
