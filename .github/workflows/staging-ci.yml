@@ -76,6 +76,9 @@ jobs:
           fi
           echo "$HOME/bin" >> "$GITHUB_PATH"
 
+      - name: Prepare mulle state
+        run: mkdir -p .mulle/var
+
       - name: Craft
         run: |
           export PATH="$HOME/bin:$PATH"
