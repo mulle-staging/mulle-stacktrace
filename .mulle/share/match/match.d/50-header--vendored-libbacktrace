@@ -1,4 +1,0 @@
-# Vendored libbacktrace headers are implementation details. The category is
-# intentionally not one of the header categories that mulle-sde reflects or
-# installs, but clib still picks them up by type.
-libbacktrace/*.h

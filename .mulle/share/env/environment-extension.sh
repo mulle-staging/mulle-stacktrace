@@ -13,7 +13,7 @@ export MULLE_MATCH_FILENAMES="config*:*.h:*.inc:*.c:*.md:*.svg:*.png:*.jpg:*.mp3
 #
 # Used by `mulle-match find` to locate files
 #
-export MULLE_MATCH_PATH=".mulle/etc/sourcetree:${PROJECT_SOURCE_DIR}:${PROJECT_ASSET_DIR}:CMakeLists.txt:cmake:libbacktrace"
+export MULLE_MATCH_PATH=".mulle/etc/sourcetree:${PROJECT_SOURCE_DIR}:${PROJECT_ASSET_DIR}:CMakeLists.txt:cmake"
 
 
 #

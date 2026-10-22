@@ -17,26 +17,3 @@ src/mulle-stacktrace-dbghelp.c
 src/mulle-stacktrace-execinfo.c
 src/mulle-stacktrace-nop.c
 )
-
-#
-# contents selected with patternfile ??-source--vendored-libbacktrace
-#
-set( VENDORED_LIBBACKTRACE
-libbacktrace/alloc.c
-libbacktrace/atomic.c
-libbacktrace/backtrace.c
-libbacktrace/dwarf.c
-libbacktrace/elf.c
-libbacktrace/fileline.c
-libbacktrace/macho.c
-libbacktrace/mmap.c
-libbacktrace/mmapio.c
-libbacktrace/nounwind.c
-libbacktrace/pecoff.c
-libbacktrace/posix.c
-libbacktrace/print.c
-libbacktrace/read.c
-libbacktrace/simple.c
-libbacktrace/sort.c
-libbacktrace/state.c
-)

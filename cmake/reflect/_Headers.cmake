@@ -14,7 +14,6 @@ set( INCLUDE_DIRS
 src/reflect
 src/generic
 src
-libbacktrace
 )
 
 #
@@ -51,17 +50,5 @@ src/generic/include.h
 #
 set( PUBLIC_HEADERS
 src/mulle-stacktrace.h
-)
-
-#
-# contents selected with patternfile ??-header--vendored-libbacktrace
-#
-set( VENDORED_LIBBACKTRACE
-libbacktrace/backtrace.h
-libbacktrace/backtrace-supported.h
-libbacktrace/config.h
-libbacktrace/filenames.h
-libbacktrace/internal.h
-libbacktrace/mulle-backtrace-prefix.h
 )
 
