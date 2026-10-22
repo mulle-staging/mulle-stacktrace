@@ -15,6 +15,9 @@ jobs:
         os: [ubuntu-latest, macos-latest]
 
     steps:
+      - name: Add to path
+        run: echo "$HOME/bin" >> "$GITHUB_PATH"
+
       - uses: actions/checkout@v4
 
       - uses: mulle-sde/github-ci@v2
@@ -28,6 +31,10 @@ jobs:
           mulle-sde craft --debug
           exe="$(find kitchen -type f \( -name demo1 -o -name demo1.exe \) | head -1)"
           test -n "$exe"
+          if command -v dsymutil > /dev/null 2>&1
+          then
+            dsymutil "$exe"
+          fi
           "$exe" | tee demo.out
           grep -q "backend:" demo.out
           grep -q " at .*:[0-9]" demo.out
